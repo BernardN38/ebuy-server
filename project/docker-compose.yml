@@ -16,12 +16,15 @@ services:
     restart: always
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/
       - ./dist:/usr/share/nginx/html
     ports:
       - "443:443"
       - "8080:8080"
-    # depends_on:
-      # - authentication-service
+      - "8443:8443"
+    depends_on:
+      - authentication-service
+      - product-service
 
   # redis:
   #   image: redis:latest
@@ -123,15 +126,46 @@ services:
           cpus: "0.25"
           memory: 128M
     environment:
-      postgresDsn: "user=bernardn password=password host=postgres dbname=product-service port=5432 sslmode=disable"
+      postgresDsn: "user=bernardn password=password host=postgres port=5432 sslmode=disable"
       jwtSecret: "qwertyuiopasdfghjklzxcvbnm123456"
       port: ":8080"
+      dbName: "product_service"
       # rabbitmqUrl: "amqp://guest:guest@rabbitmq"
-    # depends_on:
-    #   - postgres
+    depends_on:
+      - postgres
     #   - rabbitmq
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/products/health"]
+      test:
+        ["CMD", "curl", "-f", "http://localhost:8080/api/v1/products/health"]
+      interval: 30s # Time between health checks
+      timeout: 10s # Timeout for a single health check
+      retries: 3
+  authentication-service:
+    build:
+      context: ../authentication-service
+      dockerfile: ./authentication-service.dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+    environment:
+      postgresDsn: "user=bernardn password=password host=postgres  port=5432 sslmode=disable"
+      jwtSecret: "qwertyuiopasdfghjklzxcvbnm123456"
+      port: ":8080"
+      dbName: "authentication_service"
+      # rabbitmqUrl: "amqp://guest:guest@rabbitmq"
+    depends_on:
+      - postgres
+    #   - rabbitmq
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/auth/health"]
       interval: 30s # Time between health checks
       timeout: 10s # Timeout for a single health check
       retries: 3

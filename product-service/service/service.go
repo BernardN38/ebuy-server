@@ -5,11 +5,19 @@ import (
 	"database/sql"
 	"time"
 
-	products_sql "github.com/BernardN38/ebuy-server/sqlc/products"
+	products_sql "github.com/BernardN38/ebuy-server/product-service/sqlc/products"
 )
 
 type ProductService struct {
-	productsDbQueries *products_sql.Queries
+	productsDbQueries queries
+}
+
+// for testing purposes
+type queries interface {
+	CreateProduct(context.Context, products_sql.CreateProductParams) error
+	GetProduct(context.Context, int32) (products_sql.Product, error)
+	PatchProduct(context.Context, products_sql.PatchProductParams) error
+	DeleteProduct(context.Context, int32) error
 }
 
 func New(db *sql.DB) *ProductService {
