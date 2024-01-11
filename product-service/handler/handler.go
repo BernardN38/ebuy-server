@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/BernardN38/ebuy-server/service"
+	"github.com/BernardN38/ebuy-server/product-service/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 )
@@ -60,9 +60,11 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 	//write success response
 	w.WriteHeader(http.StatusCreated)
+
+	//change this to correct porduct id in future
 	json.NewEncoder(w).Encode(
 		ProductCreationResponse{
-			PoductID:     1,
+			PoductID:     0,
 			ErrorMessage: "",
 		},
 	)
