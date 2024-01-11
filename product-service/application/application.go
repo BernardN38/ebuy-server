@@ -27,7 +27,7 @@ type Server struct {
 var embedMigrations embed.FS
 
 func NewServer(port string, jwtSecret string, h *handler.Handler) *Server {
-	tokenManager := jwtauth.New("HS256", []byte(jwtSecret), nil)
+	tokenManager := jwtauth.New("HS512", []byte(jwtSecret), nil)
 	r := SetupRouter(h, tokenManager)
 	return &Server{
 		router: r,
