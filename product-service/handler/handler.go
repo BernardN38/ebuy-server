@@ -2,12 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/BernardN38/ebuy-server/product-service/service"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -35,6 +37,18 @@ func (h *Handler) CheckHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
+	_, claims, _ := jwtauth.FromContext(r.Context())
+	fmt.Println(claims["user_id"])
+	userId, ok := claims["user_id"].(float64)
+	if !ok {
+		http.Error(w, "bad token", http.StatusBadRequest)
+		return
+	}
+	// userIdInt, err := strconv.Atoi(userId)
+	// if !ok {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
 	// decode json body
 	var createProductBody ProductPayload
 	err := json.NewDecoder(r.Body).Decode(&createProductBody)
@@ -43,6 +57,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error decoding body", http.StatusBadRequest)
 		return
 	}
+	createProductBody.OwnerId = int(userId)
 	//validate json body
 	err = h.validator.Struct(createProductBody)
 	if err != nil {
@@ -86,16 +101,18 @@ func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(
-		ProductResponse{
-			PoductID:    int(product.ID),
-			Name:        product.Name,
-			Description: product.Description,
-			Price:       int(product.Price),
-		},
+		product,
 	)
 }
 
 func (h *Handler) PatchProduct(w http.ResponseWriter, r *http.Request) {
+	_, claims, _ := jwtauth.FromContext(r.Context())
+	fmt.Println(claims["user_id"])
+	userId, ok := claims["user_id"].(float64)
+	if !ok {
+		http.Error(w, "bad token", http.StatusBadRequest)
+		return
+	}
 	productId := chi.URLParam(r, "productId")
 	productIdInt, err := strconv.Atoi(productId)
 	if err != nil {
@@ -106,6 +123,7 @@ func (h *Handler) PatchProduct(w http.ResponseWriter, r *http.Request) {
 	var productUpdate ProductPayload
 	json.NewDecoder(r.Body).Decode(&productUpdate)
 	err = h.productService.PatchProduct(r.Context(), productIdInt, service.ProductParams{
+		OwnerId:     int(userId),
 		Name:        productUpdate.Name,
 		Description: productUpdate.Description,
 		Price:       productUpdate.Price,
@@ -119,6 +137,13 @@ func (h *Handler) PatchProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+	_, claims, _ := jwtauth.FromContext(r.Context())
+	fmt.Println(claims["user_id"])
+	userId, ok := claims["user_id"].(float64)
+	if !ok {
+		http.Error(w, "bad token", http.StatusBadRequest)
+		return
+	}
 	productId := chi.URLParam(r, "productId")
 	productIdInt, err := strconv.Atoi(productId)
 	if err != nil {
@@ -126,7 +151,7 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "product id invalid", http.StatusBadRequest)
 		return
 	}
-	err = h.productService.DeleteProduct(r.Context(), productIdInt)
+	err = h.productService.DeleteProduct(r.Context(), productIdInt, int(userId))
 	if err != nil {
 		http.Error(w, "unabble to delete product", http.StatusBadRequest)
 	}

@@ -34,11 +34,11 @@ func (m *MockQueries) GetProduct(ctx context.Context, id int32) (products_sql.Pr
 	}
 	return products_sql.Product{}, errors.New("product id not found in db")
 }
-func (m *MockQueries) PatchProduct(context.Context, products_sql.PatchProductParams) error {
-	return nil
+func (m *MockQueries) PatchProduct(context.Context, products_sql.PatchProductParams) (int64, error) {
+	return 1, nil
 }
-func (m *MockQueries) DeleteProduct(context.Context, int32) error {
-	return nil
+func (m *MockQueries) DeleteProduct(context.Context, products_sql.DeleteProductParams) (int64, error) {
+	return 1, nil
 }
 
 // happy path

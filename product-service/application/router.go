@@ -18,14 +18,14 @@ func SetupRouter(h *handler.Handler, tm *jwtauth.JWTAuth) *chi.Mux {
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Get("/api/v1/products/health", h.CheckHealth)
-	r.Post("/api/v1/products", h.CreateProduct)
 	r.Get("/api/v1/products/{productId}", h.GetProduct)
-	r.Patch("/api/v1/products/{productId}", h.PatchProduct)
-	r.Delete("/api/v1/products/{productId}", h.DeleteProduct)
 	// Protected routes
 	r.Group(func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tm))
 		r.Use(jwtauth.Authenticator(tm))
+		r.Post("/api/v1/products", h.CreateProduct)
+		r.Patch("/api/v1/products/{productId}", h.PatchProduct)
+		r.Delete("/api/v1/products/{productId}", h.DeleteProduct)
 	})
 	return r
 }

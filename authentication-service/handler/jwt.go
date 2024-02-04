@@ -16,7 +16,7 @@ func NewTokenManger(jwtAuth *jwtauth.JWTAuth) *TokenManager {
 	}
 }
 func (tm *TokenManager) CreateToken(userId int) (string, error) {
-	_, tokenString, err := tm.jwtAuth.Encode(map[string]interface{}{"user_id": userId, "exp": time.Now().Add(time.Minute * 10)})
+	_, tokenString, err := tm.jwtAuth.Encode(map[string]interface{}{"user_id": userId, "exp": time.Now().Add(time.Minute * 30)})
 	if err != nil {
 		return "", err
 	}

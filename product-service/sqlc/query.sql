@@ -2,16 +2,24 @@
 SELECT * FROM products;
 -- name: GetProduct :one
 SELECT * FROM products WHERE id = $1;
--- name: PatchProduct :exec
+-- name: PatchProduct :one
+with updated as (
 UPDATE products
 SET
-    name = COALESCE(NULLIF($2,''), name),                   
-    description = COALESCE(NULLIF($3,''), description), 
-    price = COALESCE(NULLIF($4,0), price)                  
+    name = COALESCE(NULLIF($3,''), name),                   
+    description = COALESCE(NULLIF($4,''), description), 
+    price = COALESCE(NULLIF($5,0), price)                  
 WHERE
-    id = $1;                                  
+    id = $1 and owner_id = $2 returning id) 
+    select count(*)
+from updated;                            
 
--- name: DeleteProduct :exec 
-DELETE from products WHERE id = $1;
+-- name: DeleteProduct :one
+with deleted as (
+   DELETE FROM products WHERE id  = $1 and owner_id = $2
+   returning id
+)
+select count(*)
+from deleted;
 -- name: CreateProduct :exec
-INSERT INTO products (name, description, price) VALUES ($1, $2, $3);
+INSERT INTO products (owner_id, name, description, price) VALUES ($1, $2, $3, $4);

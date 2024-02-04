@@ -76,15 +76,13 @@ func (p *passwordHasher) VerifyPassword(hashedPassword, password string) (bool, 
 	if err != nil {
 		return false, err
 	}
-
 	storedHashedPassword, err := decodeBase64(parts[1])
 	if err != nil {
 		return false, err
 	}
-	// Hash the provided password with the stored salt
-	computedHash := argon2.IDKey([]byte(password), salt, 1, 64*1024, 4, 32)
 	// Compare the computed hash with the stored hash
-	return compareHashes(computedHash, storedHashedPassword), nil
+	matches := compareHashes(argon2.IDKey([]byte(password), salt, 1, 64*1024, 4, 32), storedHashedPassword)
+	return matches, nil
 }
 
 // Helper function to decode base64 string to bytes
