@@ -5,6 +5,7 @@
 package products_sql
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -14,5 +15,11 @@ type Product struct {
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	Price       int32     `json:"price"`
+	ProductType string    `json:"productType"`
 	CreatedAt   time.Time `json:"createdAt"`
+}
+
+type ProductType struct {
+	ID       int32          `json:"id"`
+	TypeName sql.NullString `json:"typeName"`
 }
