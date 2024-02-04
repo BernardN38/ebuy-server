@@ -1,6 +1,7 @@
 package handler
 
 type ProductPayload struct {
+	OwnerId     int    `json:"ownerId" validate:"required"`
 	Name        string `json:"name" validate:"required,min=5,max=20"`
 	Description string `json:"description" validate:"required,min=5,max=50"`
 	Price       int    `json:"price" validate:"required"`

@@ -33,6 +33,7 @@ func NewServer(port string, jwtSecret string, h *handler.Handler, tokenManager *
 		port:   port,
 	}
 }
+
 func New() *Application {
 	config, err := getEnvConfig()
 	if err != nil {

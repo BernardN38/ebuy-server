@@ -7,13 +7,19 @@ up:
 	@echo "Docker images started!"
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_product build_auth
+up_build: build_product build_auth build_image_proccessing_service
 	@echo "Stopping docker images (if running...)"
 	docker-compose down 
 	@echo "Building (when required) and starting docker images..."
 	docker-compose up --build
 	@echo "Docker images built and started!"
 
+up_build_detached: build_product build_auth build_image_proccessing_service
+	@echo "Stopping docker images (if running...)"
+	docker-compose down 
+	@echo "Building (when required) and starting docker images..."
+	docker-compose up --build -d
+	@echo "Docker images built and started!"
 ## down: stop docker compose
 down:
 	@echo "Stopping docker compose..."
@@ -30,4 +36,15 @@ build_auth:
 build_product:
 	@echo "Building product service binary..."
 	cd ../product-service && env GOOS=linux CGO_ENABLED=0 go build -o ${PRODUCT_BINARY} ./cmd/api
+	@echo "Done!"
+
+## build_media: builds the media service binary as a linux executable
+build_product:
+	@echo "Building media service binary..."
+	cd ../media-service && ./mvnw install -DskipTests
+	@echo "Done!"
+
+build_image_proccessing_service:
+	@echo "Building image_proccessing binary..."
+	cd ../image-proccessing-service && docker build -t image-proccessing-service -f image-proccessing-service.dockerfile .
 	@echo "Done!"

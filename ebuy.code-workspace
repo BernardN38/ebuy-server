@@ -1,0 +1,23 @@
+{
+  "folders": [
+    {
+      "path": "authentication-service"
+    },
+    {
+      "path": "product-service"
+    },
+    {
+      "path": "project"
+    },
+    {
+      "path": "media-service"
+    },
+    {
+      "path": "image-proccessing-service"
+    }
+  ],
+  "settings": {
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.compile.nullAnalysis.mode": "automatic"
+  }
+}

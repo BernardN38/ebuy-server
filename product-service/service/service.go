@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	products_sql "github.com/BernardN38/ebuy-server/product-service/sqlc/products"
@@ -16,12 +17,13 @@ type ProductService struct {
 type queries interface {
 	CreateProduct(context.Context, products_sql.CreateProductParams) error
 	GetProduct(context.Context, int32) (products_sql.Product, error)
-	PatchProduct(context.Context, products_sql.PatchProductParams) error
-	DeleteProduct(context.Context, int32) error
+	PatchProduct(context.Context, products_sql.PatchProductParams) (int64, error)
+	DeleteProduct(context.Context, products_sql.DeleteProductParams) (int64, error)
 }
 
 func New(db *sql.DB) *ProductService {
 	productQueries := products_sql.New(db)
+	// productQueries.de
 	return &ProductService{
 		productsDbQueries: productQueries,
 	}
@@ -37,6 +39,7 @@ func (p *ProductService) CreateProduct(ctx context.Context, product ProductParam
 	// attempt create product
 	go func() {
 		err := p.productsDbQueries.CreateProduct(timeoutCtx, products_sql.CreateProductParams{
+			OwnerID:     int32(product.OwnerId),
 			Name:        product.Name,
 			Description: product.Description,
 			Price:       int32(product.Price),
@@ -89,12 +92,17 @@ func (p *ProductService) PatchProduct(ctx context.Context, productId int, produc
 	successCh := make(chan bool)
 	errCh := make(chan error)
 	go func() {
-		err := p.productsDbQueries.PatchProduct(timeoutCtx, products_sql.PatchProductParams{
+		count, err := p.productsDbQueries.PatchProduct(timeoutCtx, products_sql.PatchProductParams{
 			ID:      int32(productId),
-			Column2: productUpdate.Name,
-			Column3: productUpdate.Description,
-			Column4: int32(productUpdate.Price),
+			OwnerID: int32(productUpdate.OwnerId),
+			Column3: productUpdate.Name,
+			Column4: productUpdate.Description,
+			Column5: int32(productUpdate.Price),
 		})
+		if count == 0 {
+			errCh <- errors.New("no rows found")
+			return
+		}
 		if err != nil {
 			errCh <- err
 			return
@@ -111,13 +119,20 @@ func (p *ProductService) PatchProduct(ctx context.Context, productId int, produc
 	}
 }
 
-func (p *ProductService) DeleteProduct(ctx context.Context, productid int) error {
+func (p *ProductService) DeleteProduct(ctx context.Context, productid int, ownerId int) error {
 	timeoutCtx, cancel := context.WithTimeout(ctx, time.Millisecond*200)
 	defer cancel()
 	successCh := make(chan bool)
 	errCh := make(chan error)
 	go func() {
-		err := p.productsDbQueries.DeleteProduct(timeoutCtx, int32(productid))
+		count, err := p.productsDbQueries.DeleteProduct(timeoutCtx, products_sql.DeleteProductParams{
+			ID:      int32(productid),
+			OwnerID: int32(ownerId),
+		})
+		if count == 0 {
+			errCh <- errors.New("no rows found")
+			return
+		}
 		if err != nil {
 			errCh <- err
 			return
