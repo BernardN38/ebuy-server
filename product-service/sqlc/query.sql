@@ -2,6 +2,12 @@
 SELECT * FROM products;
 -- name: GetProduct :one
 SELECT * FROM products WHERE id = $1;
+-- name: GetRecentProducts :many
+SELECT * 
+FROM products
+ORDER BY created_at DESC
+LIMIT $1;
+
 -- name: PatchProduct :one
 with updated as (
 UPDATE products
@@ -21,5 +27,6 @@ with deleted as (
 )
 select count(*)
 from deleted;
+
 -- name: CreateProduct :exec
 INSERT INTO products (owner_id, name, description, price) VALUES ($1, $2, $3, $4);

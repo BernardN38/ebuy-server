@@ -64,7 +64,7 @@ func New() *Application {
 	//run db migrations
 	err = RunDatabaseMigrations(db)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 		return &Application{}
 	}
 

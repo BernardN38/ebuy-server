@@ -104,7 +104,18 @@ func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 		product,
 	)
 }
-
+func (h *Handler) GetRecentProducts(w http.ResponseWriter, r *http.Request) {
+	products, err := h.productService.GetRecentProducts(r.Context())
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "unable to get product", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(
+		products,
+	)
+}
 func (h *Handler) PatchProduct(w http.ResponseWriter, r *http.Request) {
 	_, claims, _ := jwtauth.FromContext(r.Context())
 	fmt.Println(claims["user_id"])

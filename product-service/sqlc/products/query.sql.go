@@ -52,7 +52,7 @@ func (q *Queries) DeleteProduct(ctx context.Context, arg DeleteProductParams) (i
 }
 
 const getAll = `-- name: GetAll :many
-SELECT id, owner_id, name, description, price, created_at FROM products
+SELECT id, owner_id, name, description, price, product_type, created_at FROM products
 `
 
 func (q *Queries) GetAll(ctx context.Context) ([]Product, error) {
@@ -70,6 +70,7 @@ func (q *Queries) GetAll(ctx context.Context) ([]Product, error) {
 			&i.Name,
 			&i.Description,
 			&i.Price,
+			&i.ProductType,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -86,7 +87,7 @@ func (q *Queries) GetAll(ctx context.Context) ([]Product, error) {
 }
 
 const getProduct = `-- name: GetProduct :one
-SELECT id, owner_id, name, description, price, created_at FROM products WHERE id = $1
+SELECT id, owner_id, name, description, price, product_type, created_at FROM products WHERE id = $1
 `
 
 func (q *Queries) GetProduct(ctx context.Context, id int32) (Product, error) {
@@ -98,9 +99,48 @@ func (q *Queries) GetProduct(ctx context.Context, id int32) (Product, error) {
 		&i.Name,
 		&i.Description,
 		&i.Price,
+		&i.ProductType,
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const getRecentProducts = `-- name: GetRecentProducts :many
+SELECT id, owner_id, name, description, price, product_type, created_at 
+FROM products
+ORDER BY created_at DESC
+LIMIT $1
+`
+
+func (q *Queries) GetRecentProducts(ctx context.Context, limit int32) ([]Product, error) {
+	rows, err := q.db.QueryContext(ctx, getRecentProducts, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Product
+	for rows.Next() {
+		var i Product
+		if err := rows.Scan(
+			&i.ID,
+			&i.OwnerID,
+			&i.Name,
+			&i.Description,
+			&i.Price,
+			&i.ProductType,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const patchProduct = `-- name: PatchProduct :one

@@ -19,11 +19,12 @@ type queries interface {
 	GetProduct(context.Context, int32) (products_sql.Product, error)
 	PatchProduct(context.Context, products_sql.PatchProductParams) (int64, error)
 	DeleteProduct(context.Context, products_sql.DeleteProductParams) (int64, error)
+	GetRecentProducts(ctx context.Context, limit int32) ([]products_sql.Product, error)
 }
 
 func New(db *sql.DB) *ProductService {
 	productQueries := products_sql.New(db)
-	// productQueries.de
+	// productQueries.GetRecentProducts()
 	return &ProductService{
 		productsDbQueries: productQueries,
 	}
@@ -83,6 +84,31 @@ func (p *ProductService) GetProduct(ctx context.Context, productId int) (product
 		return products_sql.Product{}, err
 	case <-timeoutCtx.Done():
 		return products_sql.Product{}, timeoutCtx.Err()
+	}
+}
+
+func (p *ProductService) GetRecentProducts(ctx context.Context) ([]products_sql.Product, error) {
+	timeoutCtx, cancel := context.WithTimeout(ctx, time.Millisecond*200)
+	defer cancel()
+
+	respCh := make(chan []products_sql.Product)
+	errCh := make(chan error)
+	go func() {
+		recentProducts, err := p.productsDbQueries.GetRecentProducts(timeoutCtx, 20)
+		if err != nil {
+			errCh <- err
+			return
+		}
+
+		respCh <- recentProducts
+	}()
+	select {
+	case product := <-respCh:
+		return product, nil
+	case err := <-errCh:
+		return nil, err
+	case <-timeoutCtx.Done():
+		return nil, timeoutCtx.Err()
 	}
 }
 

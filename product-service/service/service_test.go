@@ -34,6 +34,10 @@ func (m *MockQueries) GetProduct(ctx context.Context, id int32) (products_sql.Pr
 	}
 	return products_sql.Product{}, errors.New("product id not found in db")
 }
+func (m *MockQueries) GetRecentProducts(ctx context.Context, limit int32) ([]products_sql.Product, error) {
+	time.Sleep(time.Millisecond * time.Duration(m.sleepTime))
+	return m.productStore[:10], nil
+}
 func (m *MockQueries) PatchProduct(context.Context, products_sql.PatchProductParams) (int64, error) {
 	return 1, nil
 }
