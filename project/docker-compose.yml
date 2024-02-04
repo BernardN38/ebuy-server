@@ -33,7 +33,7 @@ services:
   #   ports:
   #     - "6379:6379"
   minio:
-    image: minio/minio
+    image: minio/minio:latest
     deploy:
       mode: replicated
       replicas: 1
@@ -48,8 +48,8 @@ services:
     ports:
       - "9001:9001"
     environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
     volumes:
       - ${PWD}/minio-data:/data
     healthcheck:
