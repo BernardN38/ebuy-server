@@ -40,12 +40,3 @@ class ImageUploader:
       
         self.channel.basic_publish(exchange=exchange_name, routing_key=routing_key, body=message)
         print(f" [x] Sent '{message}'")
-
-    # def check_if_image_exists(self, hash):
-    #     # Get object information.
-    #     try:
-    #         result = self.client.stat_object('media-service', hash)
-    #         return True
-    #     except Exception as e:
-    #         print(e)
-    #         return False

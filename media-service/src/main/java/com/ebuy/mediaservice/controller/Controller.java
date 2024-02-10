@@ -2,6 +2,7 @@ package com.ebuy.mediaservice.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,9 +49,9 @@ public class Controller {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
-        Long mediaId = mediaService.CreateUserMedia(image, Long.valueOf(user.getUserId()));
+        UUID mediaId = mediaService.CreateUserMedia(image, Long.valueOf(user.getUserId()));
         return ResponseEntity
-                .ok(new MediaUploadResponse(mediaId));
+                .created(URI.create("/api/v1/media/" + mediaId)).body(new MediaUploadResponse(mediaId));
     }
 
     @GetMapping("api/v1/media/{id}")

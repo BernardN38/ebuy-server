@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 public class MediaUploadResponse {
-    private Long mediaId;
+    private UUID mediaId;
 
-    public MediaUploadResponse(Long mediaId) {
+    public MediaUploadResponse(UUID mediaId) {
         this.mediaId = mediaId;
     }
 }

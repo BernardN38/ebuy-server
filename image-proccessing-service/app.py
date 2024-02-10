@@ -1,4 +1,3 @@
-from ast import Str
 import time
 import os
 import sys
@@ -17,11 +16,11 @@ import redis
 
 
 class MediaProcessor:
-    def __init__(self, minio_client, rabbitmq_connection, image_uploader, redis_client):
+    def __init__(self, minio_client, rabbitmq_connection, image_uploader):
         self.minio_client = minio_client
         self.rabbitmq_connection = rabbitmq_connection
         self.image_uploader = image_uploader
-        self.redis_client = redis_client
+        # self.redis_client = redis_client
 
     def callback(self, ch, method, properties, body):
         start_time = time.time()
@@ -33,7 +32,12 @@ class MediaProcessor:
             content_type = data["contentType"]
             print("message received by image compressing worker: ", data)
             guess = guess_extension(content_type)
-            extension = guess.strip('.')
+            if guess is not None:
+                extension = guess.strip('.')
+            else:
+               ch.basic_ack(delivery_tag=method.delivery_tag)
+               print("content type not recognized: ", content_type)
+               return
 
             image_bytes = self.image_uploader.get_image_from_s3(external_id_full)
             if len(image_bytes.getvalue()) < 1024*1024:
@@ -128,9 +132,9 @@ def main():
             image_uploader = ImageUploader(minio_client, rabbitmq_connection)
 
             # Initialize Redis client
-            redis_client = redis.StrictRedis(host='redis', port=6379, db=0)
+            # redis_client = redis.StrictRedis(host='redis', port=6379, db=0)
 
-            media_processor = MediaProcessor(minio_client, rabbitmq_connection, image_uploader, redis_client)
+            media_processor = MediaProcessor(minio_client, rabbitmq_connection, image_uploader)
 
             queue_name = "worker"
             exchange_name = 'media_events'
@@ -145,7 +149,7 @@ def main():
         except Exception as e:
             print(f"Error connecting to RabbitMQ: {e}")
             print("Retrying in 10 seconds...")
-            time.sleep(10)  # Wait for 10 seconds before retrying
+            time.sleep(3)  # Wait for 10 seconds before retrying
 
 
 

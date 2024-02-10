@@ -41,14 +41,17 @@ public class MessageReceiver implements MessageListener {
         try {
             ImageCompressedMessage imageCompressedMessage = objectMapper.readValue(message.getBody(),
                     ImageCompressedMessage.class);
-            UserMedia userMedia = repository.findById(imageCompressedMessage.getMediaId()).orElseThrow();
-            userMedia.setCompression_status(true);
-            repository.save(userMedia);
-            System.out.println("Media compression status updated, new status: " + userMedia.getCompression_status());
+            Optional<UserMedia> userMedia = repository.findById(imageCompressedMessage.getMediaId());
+            if (!userMedia.isPresent()) {
+                return;
+            }
+            userMedia.get().setCompression_status(true);
+            repository.save(userMedia.get());
+            System.out
+                    .println(
+                            "Media compression status updated, new status: " + userMedia.get().getCompression_status());
         } catch (MessageConversionException | IOException e) {
             System.err.println("Error converting message: " + e.getMessage());
-            e.printStackTrace(); // Log the stack trace for more details
-            throw new RuntimeException("Error handling message", e);
         }
         System.out.println("message" + message);
     }

@@ -51,7 +51,7 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public Long CreateUserMedia(MultipartFile image, Long userId) throws Exception {
+    public UUID CreateUserMedia(MultipartFile image, Long userId) throws Exception {
         UUID genertatedIdFull = UUID.randomUUID();
         UUID genertatedIdCompressed = UUID.randomUUID();
         try {
@@ -63,18 +63,10 @@ public class MediaServiceImpl implements MediaService {
                     genertatedIdCompressed,
                     image.getContentType());
             rabbitTemplate.convertAndSend("media_events", "upload", message);
-            return userMedia.getId();
-        } catch (InvalidKeyException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            return userMedia.getMediaIdCompressed();
+        } catch (Exception e) {
+            throw e;
         }
-        return Long.valueOf(0);
     }
 
     @Override
