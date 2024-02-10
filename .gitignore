@@ -2,4 +2,4 @@ project/postgres-data
 project/dist
 project/minio-data
 image-proccessing-service/.venv
-
+image-proccessing-service/__pycache__
