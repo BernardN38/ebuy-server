@@ -4,11 +4,12 @@ CREATE TABLE products (
     name text NOT NULL,
     description text NOT NULL,
     price int NOT NULL,
-    product_type_id int REFERENCES product_types(id), 
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    product_type string NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    media_id UUID,
+    FOREIGN KEY (product_types) REFERENCES product_types(type_name)
 );
-
 CREATE TABLE product_types (
     id SERIAL PRIMARY KEY,
-    type_name VARCHAR(30)
+    type_name VARCHAR(30) NOT NULL UNIQUE
 );

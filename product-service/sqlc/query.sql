@@ -28,5 +28,8 @@ with deleted as (
 select count(*)
 from deleted;
 
--- name: CreateProduct :exec
-INSERT INTO products (owner_id, name, description, price) VALUES ($1, $2, $3, $4);
+-- name: CreateProduct :one
+INSERT INTO products (owner_id, name, description, price, media_id, product_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;
+
+-- name: GetProductTypes :many
+SELECT * FROM product_types;

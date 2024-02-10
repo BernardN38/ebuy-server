@@ -8,10 +8,12 @@ import (
 	"net/http"
 
 	"github.com/BernardN38/ebuy-server/product-service/handler"
+	"github.com/BernardN38/ebuy-server/product-service/messaging"
 	"github.com/BernardN38/ebuy-server/product-service/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 	_ "github.com/lib/pq"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Application struct {
@@ -68,7 +70,27 @@ func New() *Application {
 		return &Application{}
 	}
 
-	productService := service.New(db)
+	conn, err := amqp.Dial(config.RabbitUrl)
+	if err != nil {
+		log.Println(err)
+		return &Application{}
+	}
+	err = initExchangesAndQueues(conn)
+	if err != nil {
+		log.Println(err)
+		return &Application{}
+	}
+	channel, err := conn.Channel()
+	if err != nil {
+		log.Println(err)
+		return &Application{}
+	}
+	rabbitmqEmitter := messaging.New(channel)
+	productService, err := service.New(db, rabbitmqEmitter)
+	if err != nil {
+		log.Println(err)
+		return &Application{}
+	}
 	handler := handler.New(productService)
 	server := NewServer(config.Port, config.JwtSecret, handler)
 
@@ -100,4 +122,33 @@ func createDatabaseIfNotExists(db *sql.DB, dbName string) error {
 	}
 
 	return err
+}
+
+type ExchangeQueueDeclaration struct {
+	exchangeName string
+	exchangeType string
+	queueName    string
+	routingKey   string
+}
+
+func initExchangesAndQueues(conn *amqp.Connection) error {
+	channel, err := conn.Channel()
+	if err != nil {
+		return err
+	}
+	declarations := []ExchangeQueueDeclaration{
+		{
+			exchangeName: "product_events",
+			exchangeType: "topic",
+			queueName:    "product_updates",
+			routingKey:   "product.#",
+		},
+	}
+	for _, v := range declarations {
+		err := messaging.DeclareExchangeAndQueue(channel, v.exchangeName, v.exchangeType, v.queueName, v.routingKey)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

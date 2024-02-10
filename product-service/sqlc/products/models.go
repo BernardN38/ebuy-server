@@ -5,21 +5,23 @@
 package products_sql
 
 import (
-	"database/sql"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Product struct {
-	ID          int32     `json:"id"`
-	OwnerID     int32     `json:"ownerId"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Price       int32     `json:"price"`
-	ProductType string    `json:"productType"`
-	CreatedAt   time.Time `json:"createdAt"`
+	ID          int32         `json:"id"`
+	OwnerID     int32         `json:"ownerId"`
+	Name        string        `json:"name"`
+	Description string        `json:"description"`
+	Price       int32         `json:"price"`
+	ProductType string        `json:"productType"`
+	CreatedAt   time.Time     `json:"createdAt"`
+	MediaID     uuid.NullUUID `json:"mediaId"`
 }
 
 type ProductType struct {
-	ID       int32          `json:"id"`
-	TypeName sql.NullString `json:"typeName"`
+	ID       int32  `json:"id"`
+	TypeName string `json:"typeName"`
 }

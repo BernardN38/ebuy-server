@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -8,13 +9,23 @@ import (
 	"strconv"
 
 	"github.com/BernardN38/ebuy-server/product-service/service"
+	products_sql "github.com/BernardN38/ebuy-server/product-service/sqlc/products"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-playground/validator/v10"
 )
 
+type Service interface {
+	CreateProduct(context.Context, service.ProductParams) error
+	GetProduct(context.Context, int) (products_sql.Product, error)
+	GetRecentProducts(context.Context, int) ([]products_sql.Product, error)
+	PatchProduct(context.Context, int, service.ProductParams) error
+	DeleteProduct(context.Context, int, int) error
+	GetProductTypes(context.Context) ([]products_sql.ProductType, error)
+}
+
 type Handler struct {
-	productService *service.ProductService
+	productService Service
 	validator      *validator.Validate
 }
 
@@ -38,18 +49,11 @@ func (h *Handler) CheckHealth(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	_, claims, _ := jwtauth.FromContext(r.Context())
-	fmt.Println(claims["user_id"])
 	userId, ok := claims["user_id"].(float64)
 	if !ok {
 		http.Error(w, "bad token", http.StatusBadRequest)
 		return
 	}
-	// userIdInt, err := strconv.Atoi(userId)
-	// if !ok {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
-	// decode json body
 	var createProductBody ProductPayload
 	err := json.NewDecoder(r.Body).Decode(&createProductBody)
 	if err != nil {
@@ -75,14 +79,6 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 	//write success response
 	w.WriteHeader(http.StatusCreated)
-
-	//change this to correct porduct id in future
-	json.NewEncoder(w).Encode(
-		ProductCreationResponse{
-			PoductID:     0,
-			ErrorMessage: "",
-		},
-	)
 }
 
 func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
@@ -104,8 +100,41 @@ func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 		product,
 	)
 }
+
+func (h *Handler) GetProductTypes(w http.ResponseWriter, r *http.Request) {
+	productsTypes, err := h.productService.GetProductTypes(r.Context())
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "unable to get product", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	types := make([]string, 0)
+	for _, v := range productsTypes {
+		types = append(types, v.TypeName)
+	}
+	json.NewEncoder(w).Encode(
+		map[string]any{
+			"productTypes": types,
+		},
+	)
+}
 func (h *Handler) GetRecentProducts(w http.ResponseWriter, r *http.Request) {
-	products, err := h.productService.GetRecentProducts(r.Context())
+	// Get query parameters using chi
+	queryParams := r.URL.Query()
+
+	// Extract specific parameters
+	limit := queryParams.Get("limit")
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		log.Println(err)
+		limitInt = 10
+	}
+	if limitInt > 100 {
+		http.Error(w, "too many entries requested", http.StatusBadRequest)
+		return
+	}
+	products, err := h.productService.GetRecentProducts(r.Context(), limitInt)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "unable to get product", http.StatusBadRequest)
@@ -113,7 +142,9 @@ func (h *Handler) GetRecentProducts(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(
-		products,
+		map[string]any{
+			"products": products,
+		},
 	)
 }
 func (h *Handler) PatchProduct(w http.ResponseWriter, r *http.Request) {

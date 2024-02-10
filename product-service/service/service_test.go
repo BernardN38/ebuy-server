@@ -9,21 +9,29 @@ import (
 	products_sql "github.com/BernardN38/ebuy-server/product-service/sqlc/products"
 )
 
+// CreateProduct(context.Context, products_sql.CreateProductParams) error
+//
+//	GetProduct(context.Context, int32) (products_sql.Product, error)
+//	PatchProduct(context.Context, products_sql.PatchProductParams) (int64, error)
+//	DeleteProduct(context.Context, products_sql.DeleteProductParams) (int64, error)
+//	GetRecentProducts(ctx context.Context, limit int32) ([]products_sql.Product, error)
+//	GetProductTypes(ctx context.Context) ([]products_sql.ProductType, error)
 type MockQueries struct {
 	productStore []products_sql.Product
 	sleepTime    int
 }
 
-func (m *MockQueries) CreateProduct(ctx context.Context, product products_sql.CreateProductParams) error {
+func (m *MockQueries) CreateProduct(ctx context.Context, product products_sql.CreateProductParams) (int32, error) {
 	time.Sleep(time.Millisecond * time.Duration(m.sleepTime))
+	productId := int32(len(m.productStore) + 1)
 	m.productStore = append(m.productStore, products_sql.Product{
-		ID:          int32(len(m.productStore) + 1),
+		ID:          productId,
 		Name:        product.Name,
 		Description: product.Description,
 		Price:       product.Price,
 		CreatedAt:   time.Now(),
 	})
-	return nil
+	return productId, nil
 }
 func (m *MockQueries) GetProduct(ctx context.Context, id int32) (products_sql.Product, error) {
 	time.Sleep(time.Millisecond * time.Duration(m.sleepTime))
@@ -43,6 +51,9 @@ func (m *MockQueries) PatchProduct(context.Context, products_sql.PatchProductPar
 }
 func (m *MockQueries) DeleteProduct(context.Context, products_sql.DeleteProductParams) (int64, error) {
 	return 1, nil
+}
+func (m *MockQueries) GetProductTypes(ctx context.Context) ([]products_sql.ProductType, error) {
+	return []products_sql.ProductType{}, nil
 }
 
 // happy path
