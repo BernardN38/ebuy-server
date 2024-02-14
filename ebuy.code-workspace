@@ -17,10 +17,14 @@
     },
     {
       "path": "notification-service"
+    },
+    {
+      "path": "order-service"
     }
   ],
   "settings": {
     "java.configuration.updateBuildConfiguration": "interactive",
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "rust-analyzer.showUnlinkedFileNotification": false
   }
 }
