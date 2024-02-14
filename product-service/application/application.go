@@ -48,6 +48,11 @@ func New() *Application {
 		log.Fatalln("unable to connect to the database:", err)
 		return &Application{}
 	}
+	err = db.Ping()
+	if err != nil {
+		log.Fatalln(err)
+		return &Application{}
+	}
 	defer db.Close()
 
 	// Check if the database exists
@@ -66,29 +71,29 @@ func New() *Application {
 	//run db migrations
 	err = RunDatabaseMigrations(db)
 	if err != nil {
-		log.Println(err)
+		log.Fatalln(err)
 		return &Application{}
 	}
 
 	conn, err := amqp.Dial(config.RabbitUrl)
 	if err != nil {
-		log.Println(err)
+		log.Fatalln(err)
 		return &Application{}
 	}
 	err = initExchangesAndQueues(conn)
 	if err != nil {
-		log.Println(err)
+		log.Fatalln(err)
 		return &Application{}
 	}
 	channel, err := conn.Channel()
 	if err != nil {
-		log.Println(err)
+		log.Fatalln(err)
 		return &Application{}
 	}
 	rabbitmqEmitter := messaging.New(channel)
 	productService, err := service.New(db, rabbitmqEmitter)
 	if err != nil {
-		log.Println(err)
+		log.Fatalln(err)
 		return &Application{}
 	}
 	handler := handler.New(productService)

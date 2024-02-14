@@ -140,10 +140,41 @@ services:
       rabbitmqUrl: "amqp://guest:guest@rabbitmq"
     depends_on:
       - postgres
-    #   - rabbitmq
+      - rabbitmq
     healthcheck:
       test:
         ["CMD", "curl", "-f", "http://localhost:8080/api/v1/products/health"]
+      interval: 60s # Time between health checks
+      timeout: 10s # Timeout for a single health check
+      retries: 3
+
+  order-service:
+    build:
+      context: ../order-service
+      dockerfile: ./order-service.dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+    environment:
+      postgresDsn: "user=bernardn password=password host=postgres port=5432 sslmode=disable"
+      jwtSecret: "qwertyuiopasdfghjklzxcvbnm123456qwertyuiopasdfghjklzxcvbnm123456"
+      port: ":8080"
+      dbName: "order_service"
+      rabbitmqUrl: "amqp://guest:guest@rabbitmq"
+    depends_on:
+      - postgres
+      - rabbitmq
+    healthcheck:
+      test:
+        ["CMD", "curl", "-f", "http://localhost:8080/api/v1/orders/health"]
       interval: 60s # Time between health checks
       timeout: 10s # Timeout for a single health check
       retries: 3
@@ -171,7 +202,7 @@ services:
       # rabbitmqUrl: "amqp://guest:guest@rabbitmq"
     depends_on:
       - postgres
-    #   - rabbitmq
+      - rabbitmq
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/auth/health"]
       interval: 60s # Time between health checks
