@@ -29,7 +29,7 @@ up_build_d: build_product build_auth build_image_proccessing_service build_media
 	docker-compose up -d --build product-service authentication-service media-service image-proccessing-service nginx
 	@echo "Docker images built and started!"
 
-up_infra: build_product build_auth build_image_proccessing_service
+up_infra:
 	@echo "Stopping docker images (if running...)"
 	docker-compose down rabbitmq postgres minio
 	@echo "Building (when required) and starting docker images..."
