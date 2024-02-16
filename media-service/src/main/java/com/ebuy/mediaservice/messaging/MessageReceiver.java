@@ -49,7 +49,8 @@ public class MessageReceiver implements MessageListener {
             repository.save(userMedia.get());
             System.out
                     .println(
-                            "Media compression status updated, new status: " + userMedia.get().getCompression_status());
+                            "Media compression status updated, new status: " + userMedia.get().getCompression_status()
+                                    + imageCompressedMessage.getUserId());
         } catch (MessageConversionException | IOException e) {
             System.err.println("Error converting message: " + e.getMessage());
         }

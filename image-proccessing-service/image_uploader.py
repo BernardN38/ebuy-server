@@ -18,10 +18,11 @@ class ImageUploader:
         img_bytes_io = BytesIO(img_bytes.read())
         return img_bytes_io
 
-    def upload_image_to_s3(self, image_obj, media_id, external_id_compressed, content_type):
+    def upload_image_to_s3(self, image_obj, media_id, userId, external_id_compressed, content_type):
+        print( type)
         compressed_image_size = image_obj.getbuffer().nbytes
         self.minio_client.put_object('media-service', f'{external_id_compressed}', image_obj, compressed_image_size, part_size=5*1024*1024, content_type=content_type)
-        self.publish_message("media_events", "media.compressed", json.dumps({"mediaId": media_id, "externalIdCompressed": f'{external_id_compressed}'}))
+        self.publish_message("media_events", "media.compressed", json.dumps({"mediaId": media_id, "externalIdCompressed": f'{external_id_compressed}',"userId": userId}))
         return
 
     def declare_exchange(self, exchange_name):
