@@ -14,16 +14,19 @@ public class ImageUploadedMessage implements Serializable {
     private UUID externalIdFull;
     private UUID externalIdCompressed;
     private String contentType;
+    private Long userId;
 
     @JsonCreator
     public ImageUploadedMessage(
             @JsonProperty("mediaId") Long mediaId,
             @JsonProperty("externalIdFull") UUID externalIdFull,
             @JsonProperty("externalIdCompressed") UUID externalIdCompressed,
-            @JsonProperty("contentType") String contentType) {
+            @JsonProperty("contentType") String contentType,
+            @JsonProperty("userId") Long userId) {
         this.mediaId = mediaId;
         this.externalIdFull = externalIdFull;
         this.externalIdCompressed = externalIdCompressed;
         this.contentType = contentType;
+        this.userId = userId;
     }
 }

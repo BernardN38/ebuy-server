@@ -30,6 +30,7 @@ class MediaProcessor:
             external_id_full = data["externalIdFull"]
             external_id_compressed = data["externalIdCompressed"]
             content_type = data["contentType"]
+            userId = data["userId"]
             print("message received by image compressing worker: ", data)
             guess = guess_extension(content_type)
             if guess is not None:
@@ -46,7 +47,7 @@ class MediaProcessor:
                 self.image_uploader.upload_image_to_s3(image_bytes,media_id,external_id_compressed, content_type)
                 return
             if extension == "jpg" or extension == "jpeg":
-                self.compress_upload_jpeg(image_bytes, media_id, external_id_compressed)
+                self.compress_upload_jpeg(image_bytes, media_id ,userId, external_id_compressed)
             elif extension == "heif":
                 self.compress_convert_upload_heic(image_bytes, media_id, external_id_compressed)
             elif extension == "png":
@@ -66,7 +67,7 @@ class MediaProcessor:
         channel = self.rabbitmq_connection.channel()
         channel.exchange_declare(exchange=exchange_name, exchange_type='topic', durable=True)
         channel.queue_declare(queue=queue_name, durable=True)
-        channel.queue_bind(exchange=exchange_name, queue=queue_name, routing_key="upload")
+        channel.queue_bind(exchange=exchange_name, queue=queue_name, routing_key="media.uploaded")
         channel.basic_qos(prefetch_count=4)
         channel.basic_consume(queue_name, self.callback, auto_ack=False)
         channel.start_consuming()
@@ -85,7 +86,7 @@ class MediaProcessor:
         return
 
 
-    def compress_upload_jpeg(self, image_bytes, media_id, external_id_compressed):
+    def compress_upload_jpeg(self, image_bytes, media_id, userId, external_id_compressed):
         image = Image.open(image_bytes)
         out = BytesIO()
         resized_image = self.resize_image(image)
@@ -94,7 +95,7 @@ class MediaProcessor:
                 optimize=True,
                 quality=75)
         out.seek(0)
-        self.image_uploader.upload_image_to_s3(out, media_id, external_id_compressed, "image/jpeg")
+        self.image_uploader.upload_image_to_s3(out, media_id, userId, external_id_compressed, "image/jpeg")
         out.close()
         return
 

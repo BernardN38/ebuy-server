@@ -61,8 +61,8 @@ public class MediaServiceImpl implements MediaService {
             repository.save(userMedia);
             ImageUploadedMessage message = new ImageUploadedMessage(userMedia.getId(), genertatedIdFull,
                     genertatedIdCompressed,
-                    image.getContentType());
-            rabbitTemplate.convertAndSend("media_events", "upload", message);
+                    image.getContentType(), userId);
+            rabbitTemplate.convertAndSend("media_events", "media.uploaded", message);
             return userMedia.getMediaIdCompressed();
         } catch (Exception e) {
             throw e;
