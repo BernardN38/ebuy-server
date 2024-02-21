@@ -4,4 +4,4 @@ project/minio-data
 image-proccessing-service/.venv
 image-proccessing-service/__pycache__
 image-proccessing-service/.vscode
-
+user-service/target
