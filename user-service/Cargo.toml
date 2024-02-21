@@ -1,0 +1,17 @@
+[package]
+name = "analytics-service"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = { version = "0.7.4", features = ["macros", "multipart"] }
+chrono = { version = "0.4.34", features = ["serde"] }
+futures-util = "0.3.30"
+rabbitmq-stream-client = "0.4.2"
+serde = { version = "1.0.197", features = ["serde_derive"] }
+sqlx = { version = "0.7.3", features = ["postgres", "runtime-tokio-rustls", "chrono"] }
+tokio = { version = "1.36.0", features = ["rt-multi-thread"] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
