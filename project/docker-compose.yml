@@ -1,10 +1,8 @@
 version: "3.8"
 
 services:
-  user: "${UID}:${GID}"
   nginx:
     image: nginx:latest
-    user: "${UID}:${GID}"
     deploy:
       mode: replicated
       replicas: 1
@@ -38,7 +36,6 @@ services:
   #     - "6379:6379"
   minio:
     image: minio/minio:latest
-    user: "${UID}:${GID}"
     deploy:
       mode: replicated
       replicas: 1
@@ -65,7 +62,6 @@ services:
 
   postgres:
     image: postgres:latest
-    user: "${UID}:${GID}"
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: bernardn
@@ -100,7 +96,6 @@ services:
   rabbitmq:
     image: rabbitmq:management-alpine
     container_name: "rabbitmq"
-    user: "${UID}:${GID}"
     deploy:
       mode: replicated
       replicas: 1
