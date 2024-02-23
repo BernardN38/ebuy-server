@@ -7,6 +7,4 @@ jobs:
       - uses: actions/checkout@v2
       - run: pwd
       - name: cd into directory
-        run: cd project
-      - name: Build the stack
-        run: ls
+        run: cd project && make up_build_all
