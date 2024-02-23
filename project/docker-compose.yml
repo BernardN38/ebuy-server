@@ -264,3 +264,13 @@ services:
       - rabbitmq
       - postgres
       - minio
+
+  volumes:
+  my_volume:
+    driver_opts:
+      type: none
+      o: bind
+      device: /host/path/to/directory
+      # Optionally, specify the UID and GID of the owner
+      uid: "1000"
+      gid: "1000"
