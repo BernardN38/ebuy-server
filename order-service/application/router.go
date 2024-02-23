@@ -17,7 +17,7 @@ func SetupRouter(h *handler.Handler, tm *jwtauth.JWTAuth) *chi.Mux {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.Get("/api/v1/products/health", h.CheckHealth)
+	r.Get("/api/v1/orders/health", h.CheckHealth)
 
 	// Protected routes
 	r.Group(func(r chi.Router) {
