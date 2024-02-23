@@ -10,7 +10,7 @@ func CreateJWTCookie(jwtToken string) *http.Cookie {
 		Name:     "jwt",
 		Value:    jwtToken,
 		Path:     "/",
-		Domain:   "192.168.0.3",
+		Domain:   "localhost",
 		Expires:  time.Now().Add(time.Minute * 30),
 		MaxAge:   3600,
 		HttpOnly: true,

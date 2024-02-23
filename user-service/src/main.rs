@@ -1,15 +1,10 @@
 use axum::{routing::get, Router};
-
 use sqlx::postgres::PgPoolOptions;
+use std::time::Duration;
 use tokio::net::TcpListener;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod handlers;
-
-// use futures_util::stream::stream::StreamExt;
-use handlers::using_connection_extractor;
-use std::time::Duration;
-
 use crate::handlers::{create_user, get_user};
 
 #[tokio::main]
@@ -38,36 +33,6 @@ async fn main() {
         .await
         .expect("error running migrations");
 
-    // let user = User {
-    //     id: 1,
-    //     first_name: "firstName".to_string(),
-    //     last_name: "lastName".to_string(),
-    //     username: "username".to_string(),
-    //     email: "email@gmail.com".to_string(),
-    //     dob: Utc::now(),
-    //     created_at: Utc::now(),
-    //     last_updated_at: Utc::now(),
-    // };
-    // create_user(&user, &pool)
-    //     .await
-    //     .expect("error creating user");
-    // let user = get_user(1, &pool).await.expect("error getting user");
-    // let changed_user = User {
-    //     id: 1,
-    //     first_name: "chngfirstName".to_string(),
-    //     last_name: "chnglastName".to_string(),
-    //     username: "chngusername".to_string(),
-    //     email: "email@gmail.com".to_string(),
-    //     dob: Utc::now(),
-    //     created_at: Utc::now(),
-    //     last_updated_at: Utc::now(),
-    // };
-    // update_user(&changed_user, &pool)
-    //     .await
-    //     .expect("error updating users");
-
-    // println!("{:?}", user);
-    // build our application with some routes
     let app = Router::new()
         .route("/", get(get_user).post(create_user))
         .with_state(pool);
