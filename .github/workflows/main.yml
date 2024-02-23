@@ -8,4 +8,4 @@ jobs:
       - name: cd into directory
         run: cd project
       - name: Build the stack
-        run: docker-compose up -d
+        run: make up_build_all
