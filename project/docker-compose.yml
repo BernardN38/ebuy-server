@@ -1,9 +1,10 @@
 version: "3.8"
 
 services:
+  user: "${UID}:${GID}"
   nginx:
     image: nginx:latest
-    user: bernardn
+    user: "${UID}:${GID}"
     deploy:
       mode: replicated
       replicas: 1
@@ -37,7 +38,7 @@ services:
   #     - "6379:6379"
   minio:
     image: minio/minio:latest
-    user: bernardn
+    user: "${UID}:${GID}"
     deploy:
       mode: replicated
       replicas: 1
@@ -64,7 +65,7 @@ services:
 
   postgres:
     image: postgres:latest
-    user: bernardn
+    user: "${UID}:${GID}"
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: bernardn
@@ -99,7 +100,7 @@ services:
   rabbitmq:
     image: rabbitmq:management-alpine
     container_name: "rabbitmq"
-    user: bernardn
+    user: "${UID}:${GID}"
     deploy:
       mode: replicated
       replicas: 1
@@ -126,7 +127,6 @@ services:
     build:
       context: ../product-service
       dockerfile: ./product-service.dockerfile
-    user: bernardn
     restart: always
     deploy:
       mode: replicated
@@ -155,7 +155,6 @@ services:
       retries: 3
 
   order-service:
-    user: bernardn
     build:
       context: ../order-service
       dockerfile: ./order-service.dockerfile
@@ -186,7 +185,6 @@ services:
       retries: 3
 
   authentication-service:
-    user: bernardn
     build:
       context: ../authentication-service
       dockerfile: ./authentication-service.dockerfile
@@ -217,7 +215,6 @@ services:
       retries: 3
 
   media-service:
-    user: bernardn
     build:
       context: ../media-service
       dockerfile: ./media-service.dockerfile
@@ -249,7 +246,6 @@ services:
       retries: 3
 
   image-proccessing-service:
-    user: bernardn
     build:
       context: ../image-proccessing-service
       dockerfile: ./image-proccessing-service.dockerfile
