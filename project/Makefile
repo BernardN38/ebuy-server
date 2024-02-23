@@ -9,7 +9,7 @@ up:
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
 up_build: build_product build_auth build_image_proccessing_service build_media build_order_service build_image_proccessing_service
-	@echo "Stopping docker images (if running...)"
+	@echo "Stopping docker images (if running...) test change"
 	docker-compose down product-service authentication-service media-service image-proccessing-service nginx 
 	@echo "Building (when required) and starting docker images..."
 	docker-compose up --build product-service authentication-service media-service nginx image-proccessing-service order-service
