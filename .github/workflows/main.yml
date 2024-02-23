@@ -2,8 +2,9 @@ name: Docker Compose Actions Workflow
 on: push
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
-      - name: Build the stack
-        run: docker-compose up -d
+      - run: pwd
+      - name: cd into directory
+        run: cd project && make up_build_all
