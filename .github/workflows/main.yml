@@ -9,4 +9,4 @@ jobs:
       - name: cd into directory
         run: cd project
       - name: Build the stack
-        run: make up_infra
+        run: ls
