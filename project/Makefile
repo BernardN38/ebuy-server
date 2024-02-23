@@ -56,7 +56,7 @@ build_product:
 ## build_media: builds the media service binary as a linux executable
 build_media:
 	@echo "Building media service binary..."
-	cd ../media-service && mvn install -DskipTests -Dmaven.compiler.useIncrementalCompilation=true
+	cd ../media-service && ./mvnw install -DskipTests -Dmaven.compiler.useIncrementalCompilation=true
 	@echo "Done!"
 
 build_order_service:
