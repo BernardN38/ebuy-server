@@ -16,6 +16,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.ebuy.rule=Path(`/ebuy`)
       - traefik.http.routers.ebuy.entrypoints=traefik
+      - traefik.http.services.ebuy.loadbalancer.server.port=8080
     deploy:
       mode: replicated
       replicas: 1
