@@ -12,6 +12,10 @@ volumes:
 services:
   nginx:
     image: nginx:latest
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ebuy.rule=Host(`ebuy.bernardn.com`)
+      - traefik.http.routers.ebuy.entrypoints=web
     deploy:
       mode: replicated
       replicas: 1
