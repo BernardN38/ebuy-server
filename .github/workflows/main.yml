@@ -8,3 +8,5 @@ jobs:
       - run: pwd
       - name: cd into directory
         run: cd project && make up_build_all_d
+      - name: add to web network
+        run: docker network connect web project-nginx-1
