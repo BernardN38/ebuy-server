@@ -35,7 +35,7 @@ services:
       - nginx_data:/data/nginx/cache
     ports:
       # - "443:443"
-      - "8082:8080"
+      # - "8082:8080"
       # - "8443:8443"
     depends_on:
       - authentication-service
