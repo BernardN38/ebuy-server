@@ -15,7 +15,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.ebuy.rule=Path(`/ebuy`)
-      - traefik.http.routers.ebuy.entrypoints=traefik
+      - traefik.http.routers.ebuy.entrypoints=web
     deploy:
       mode: replicated
       replicas: 1
