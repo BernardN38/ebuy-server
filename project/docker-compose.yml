@@ -14,7 +14,7 @@ services:
     image: nginx:latest
     labels:
       - traefik.enable=true
-      - traefik.http.routers.ebuy.rule=Path(`/ebuy)
+      - traefik.http.routers.ebuy.rule=Path(`/ebuy`)
       - traefik.http.routers.ebuy.entrypoints=traefik
     deploy:
       mode: replicated
