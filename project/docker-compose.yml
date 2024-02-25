@@ -14,7 +14,7 @@ services:
     image: nginx:latest
     labels:
       - traefik.enable=true
-      - traefik.http.routers.ebuy.rule=Headers(`httpHostHeader`,`ebuy.bernardn.com`)
+      - traefik.http.routers.ebuy.rule=Query(`test=yes`)
       - traefik.http.routers.ebuy.entrypoints=traefik
       - traefik.http.services.ebuy.loadbalancer.server.port=8080
     deploy:
