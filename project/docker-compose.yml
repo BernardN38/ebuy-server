@@ -15,7 +15,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.ebuy.rule=Path(`/ebuy`)
-      - traefik.http.routers.ebuy.entrypoints=web
+      - traefik.http.routers.ebuy.entrypoints=traefik
     deploy:
       mode: replicated
       replicas: 1
@@ -35,7 +35,7 @@ services:
       - nginx_data:/data/nginx/cache
     ports:
       # - "443:443"
-      # - "8082:8080"
+      - "808:8080"
       # - "8443:8443"
     depends_on:
       - authentication-service
