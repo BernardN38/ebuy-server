@@ -43,11 +43,6 @@ services:
       - product-service
       - media-service
 
-  # redis:
-  #   image: redis:latest
-  #   container_name: my-redis
-  #   ports:
-  #     - "6379:6379"
   minio:
     image: minio/minio:latest
     deploy:
@@ -134,6 +129,7 @@ services:
       retries: 3
 
   product-service:
+    image: product-service
     build:
       context: ../product-service
       dockerfile: ./product-service.dockerfile
@@ -165,6 +161,7 @@ services:
       retries: 3
 
   order-service:
+    image: order-service
     build:
       context: ../order-service
       dockerfile: ./order-service.dockerfile
@@ -195,6 +192,7 @@ services:
       retries: 3
 
   authentication-service:
+    image: authentication-service
     build:
       context: ../authentication-service
       dockerfile: ./authentication-service.dockerfile
@@ -225,6 +223,7 @@ services:
       retries: 3
 
   media-service:
+    image: media-service
     build:
       context: ../media-service
       dockerfile: ./media-service.dockerfile
@@ -256,6 +255,7 @@ services:
       retries: 3
 
   image-proccessing-service:
+    image: image-proccessing-service
     build:
       context: ../image-proccessing-service
       dockerfile: ./image-proccessing-service.dockerfile
