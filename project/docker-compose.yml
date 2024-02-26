@@ -129,7 +129,7 @@ services:
       retries: 3
 
   product-service:
-    image: product-service
+    image: project-product-service
     build:
       context: ../product-service
       dockerfile: ./product-service.dockerfile
@@ -161,7 +161,7 @@ services:
       retries: 3
 
   order-service:
-    image: order-service
+    image: project-order-service
     build:
       context: ../order-service
       dockerfile: ./order-service.dockerfile
@@ -192,7 +192,7 @@ services:
       retries: 3
 
   authentication-service:
-    image: authentication-service
+    image: project-authentication-service
     build:
       context: ../authentication-service
       dockerfile: ./authentication-service.dockerfile
@@ -223,7 +223,7 @@ services:
       retries: 3
 
   media-service:
-    image: media-service
+    image: project-media-service
     build:
       context: ../media-service
       dockerfile: ./media-service.dockerfile
@@ -255,7 +255,7 @@ services:
       retries: 3
 
   image-proccessing-service:
-    image: image-proccessing-service
+    image: project-image-proccessing-service
     build:
       context: ../image-proccessing-service
       dockerfile: ./image-proccessing-service.dockerfile
