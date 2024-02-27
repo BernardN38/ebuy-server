@@ -33,14 +33,24 @@ services:
       - ./client/dist:/etc/nginx/dist
       - nginx_data:/usr/share/nginx/html
       - nginx_data:/data/nginx/cache
-    # ports:
-    # - "443:443"
-    # - "8081:8080"
+    ports:
+      # - "443:443"
+      - "8081:8080"
     # - "8443:8443"
     depends_on:
       - authentication-service
       - product-service
       - media-service
+  # nginx-prometheus-exporter:
+  #   image: nginx/nginx-prometheus-exporter:1.0
+  #   container_name: prometheus-nginx-exporter
+  #   restart: always
+  #   # env_file:
+  #   #   .env
+  #   command:
+  #     - -nginx.scrape-uri=https://nginx/stub_status
+  #   expose:
+  #     - 9113
 
   minio:
     image: minio/minio:latest
@@ -267,3 +277,7 @@ services:
       - rabbitmq
       - postgres
       - minio
+# networks:
+#   app_net:
+#     name: app_net
+#     external: true

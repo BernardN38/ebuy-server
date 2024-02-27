@@ -7,10 +7,11 @@ import (
 
 func CreateJWTCookie(jwtToken string) *http.Cookie {
 	return &http.Cookie{
-		Name:     "jwt",
-		Value:    jwtToken,
-		Path:     "/",
-		Domain:   "bernardn.com",
+		Name:  "jwt",
+		Value: jwtToken,
+		Path:  "/",
+		// Domain:   "localhost",
+		Domain:   "ebuy.bernardn.com",
 		Expires:  time.Now().Add(time.Minute * 30),
 		MaxAge:   3600,
 		HttpOnly: true,
