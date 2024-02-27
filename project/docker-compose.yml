@@ -42,7 +42,7 @@ services:
       - product-service
       - media-service
   nginx-prometheus-exporter:
-    image: nginx/nginx-prometheus-exporter:1.0
+    image: nginx/nginx-prometheus-exporter:latest
     container_name: prometheus-nginx-exporter
     restart: always
     # env_file:
