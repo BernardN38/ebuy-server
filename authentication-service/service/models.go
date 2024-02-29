@@ -1,7 +1,14 @@
 package service
 
+import (
+	"time"
+)
+
 type CreateUserParams struct {
-	Username string
-	Email    string
-	Password string
+	FirstName string
+	LastName  string
+	Username  string
+	Email     string
+	Password  string
+	DOB       time.Time
 }
