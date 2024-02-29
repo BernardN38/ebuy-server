@@ -3,16 +3,19 @@ package service
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"log"
 	"time"
 
+	"github.com/BernardN38/ebuy-server/authentication-service/messaging"
 	users_sql "github.com/BernardN38/ebuy-server/authentication-service/sqlc/users"
 )
 
 type AuthService struct {
 	userQueries    queries
 	passwordHasher *passwordHasher
+	messageEmitter messaging.MessageEmitter
 }
 
 // for testing purposes
@@ -23,12 +26,13 @@ type queries interface {
 	GetUserPassword(context.Context, string) (users_sql.GetUserPasswordRow, error)
 }
 
-func New(db *sql.DB) *AuthService {
+func New(db *sql.DB, me messaging.MessageEmitter) *AuthService {
 	userQueries := users_sql.New(db)
 	ph := NewPasswordHasher()
 	return &AuthService{
 		userQueries:    userQueries,
 		passwordHasher: ph,
+		messageEmitter: me,
 	}
 }
 
@@ -52,6 +56,20 @@ func (a *AuthService) CreateUser(ctx context.Context, createUserParams CreateUse
 			errCh <- err
 			return
 		}
+		createUserMsg, err := json.Marshal(messaging.CreateUserMessage{
+			FirstName: createUserParams.FirstName,
+			LastName:  createUserParams.LastName,
+			Username:  createUserParams.Username,
+			Email:     createUserParams.Email,
+			Dob:       createUserParams.DOB.Format(time.RFC3339),
+		})
+		if err == nil {
+			err := a.messageEmitter.SendMessage(timeoutCtx, createUserMsg, "user_events", "user.created", "user.created")
+			if err != nil {
+				log.Println(err)
+			}
+		}
+		// a.messageEmitter
 		successCh <- true
 	}()
 

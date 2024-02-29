@@ -11,7 +11,7 @@ type config struct {
 	PostgresDsn string `validate:"required"`
 	JwtSecret   string `validate:"required"`
 	DbName      string `validate:"required"`
-	// RabbitUrl   string `validate:"required"`
+	RabbitUrl   string `validate:"required"`
 }
 
 func (c *config) Validate() error {
@@ -28,11 +28,13 @@ func getEnvConfig() (*config, error) {
 	jwtSecret := os.Getenv("jwtSecret")
 	postgresDsn := os.Getenv("postgresDsn")
 	dbName := os.Getenv("dbName")
+	rabbitUrl := os.Getenv("rabbitmqURL")
 	config := config{
 		Port:        port,
 		JwtSecret:   jwtSecret,
 		PostgresDsn: postgresDsn,
 		DbName:      dbName,
+		RabbitUrl:   rabbitUrl,
 	}
 	err := config.Validate()
 	if err != nil {

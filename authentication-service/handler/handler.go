@@ -56,9 +56,12 @@ func (h *Handler) CreatUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = h.authService.CreateUser(r.Context(), service.CreateUserParams{
-		Username: creatUserPayload.Username,
-		Email:    creatUserPayload.Email,
-		Password: creatUserPayload.Password,
+		Username:  creatUserPayload.Username,
+		Email:     creatUserPayload.Email,
+		Password:  creatUserPayload.Password,
+		FirstName: creatUserPayload.FirstName,
+		LastName:  creatUserPayload.LastName,
+		DOB:       creatUserPayload.DOB,
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
