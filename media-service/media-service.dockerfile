@@ -5,4 +5,4 @@ VOLUME /tmp
 ARG JAR_FILE
 COPY ./target/media-service-0.0.1-SNAPSHOT.jar app.jar
 
-ENTRYPOINT ["java", "-Xmx1g", "-jar","/app.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar","/app.jar"]

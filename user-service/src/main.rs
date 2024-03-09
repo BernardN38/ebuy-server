@@ -14,7 +14,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 mod handlers;
 use crate::{
     database::initialize_db,
-    handlers::{create_user, get_user},
+    handlers::{check_health, create_user, get_user},
     messaging::run_rabbitmq_consumer,
 };
 mod database;
@@ -58,6 +58,7 @@ async fn main() {
     run_rabbitmq_consumer(pool_clone.clone(), &rabbitmq_connection, &channel).await;
     // run_rabbitmq_consumer(pool_clone, &rabbitmq_connection, &channel2).await;
     let app = Router::new()
+        .route("/api/v1/users/health", get(check_health))
         .route("/api/v1/users/:user_id", get(get_user))
         .route("/api/v1/users", post(create_user))
         .with_state(pool);

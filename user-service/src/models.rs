@@ -16,3 +16,14 @@ pub struct User {
     #[serde(skip_deserializing)]
     pub last_updated_at: DateTime<Utc>,
 }
+
+#[derive(FromRow, Serialize, Deserialize, Debug)]
+pub struct UserDto {
+    pub first_name: String,
+    pub last_name: String,
+    pub username: String,
+    pub email: String,
+    pub dob: DateTime<Utc>,
+    // #[serde(skip_deserializing)]
+    // pub created_at: DateTime<Utc>,
+}

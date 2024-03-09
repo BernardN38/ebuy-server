@@ -274,7 +274,7 @@ services:
           memory: 128M
         reservations:
           cpus: "0.25"
-          memory: 512M
+          memory: 128M
     environment:
       postgresDsn: "user=bernardn password=password host=postgres port=5432 sslmode=disable"
       jwtSecret: "qwertyuiopasdfghjklzxcvbnm123456qwertyuiopasdfghjklzxcvbnm123456"

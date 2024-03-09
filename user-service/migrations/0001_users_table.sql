@@ -5,6 +5,7 @@ CREATE TABLE users (
         username VARCHAR(50) NOT NULL,
         email VARCHAR(50) NOT NULL,
         dob TIMESTAMPTZ NOT NULL,
+        profile_image_id UUID,
         created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
         last_updated_at TIMESTAMPTZ NOT NULL
 );
